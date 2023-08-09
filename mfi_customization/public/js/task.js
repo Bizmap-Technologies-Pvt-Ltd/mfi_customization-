@@ -31,7 +31,7 @@ frappe.ui.form.on('Task', {
 			frm.save()
 			// set_permissions_for_symptoms(frm);
 		}
-		transfer_data_to_issue(frm)
+		// transfer_data_to_issue(frm)
 		//fetch_data_material_request_item(frm)
 		if (frm.doc.status == 'Working') {
 			let today = new Date()
@@ -72,6 +72,7 @@ frappe.ui.form.on('Task', {
 	},
 
 	after_save: function (frm) {
+		transfer_data_to_issue(frm)
 		//frm.reload();
 	},
 
@@ -732,7 +733,7 @@ function set_permissions_for_symptoms(frm) {
 
 		}
 	} else {
-		if (frappe.user.has_role("Technicians") == 1 && frappe.user != "Administrator" && frm.doc.status == "Working") {
+		if ((frappe.user.has_role("Technicians") == 1 || frappe.user.has_role("Toner Approval 1") == 1) && frappe.user != "Administrator" && frm.doc.status == "Working") {
 			frm.set_df_property('symptoms', "reqd", 1);
 			frm.set_df_property('action', "reqd", 1);
 			frm.set_df_property('cause', "reqd", 1);

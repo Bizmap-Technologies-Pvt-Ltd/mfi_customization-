@@ -553,6 +553,39 @@ def set_reading_from_task_to_issue(doc):
 		issue_doc.serial_no = doc.get("serial_no")
 	issue_doc.save(ignore_permissions=True)
 
+def set_service_records_from_task_to_issue(doc):
+	issue_doc=frappe.get_doc('Issue',{'name':doc.get("issue")})
+	for d in range(len(doc.get('technician_productivity_matrix'))):
+		try:
+			issue_doc.append("technician_productivity_matrix",{
+					"technician":doc.get('technician_productivity_matrix')[d]['technician'],
+					"assigned":doc.get('technician_productivity_matrix')[d]['assigned'],
+					"working":doc.get('technician_productivity_matrix')[d]['working'],
+					"material_request":doc.get('technician_productivity_matrix')[d]['material_request'] if doc.get('technician_productivity_matrix')[d]['material_request'] else '',
+					"material_issued":doc.get('technician_productivity_matrix')[d]['material_issued'] if doc.get('technician_productivity_matrix')[d]['material_issued'] else '',
+					"resume_working":doc.get('technician_productivity_matrix')[d]['resume_working'] if doc.get('technician_productivity_matrix')[d]['resume_working'] else '',
+					"closed":doc.get('technician_productivity_matrix')[d]['closed'],
+					"paused":doc.get('technician_productivity_matrix')[d]['paused'] if doc.get('technician_productivity_matrix')[d]['paused'] else '',
+					"productivity_time":doc.get('technician_productivity_matrix')[d]['productivity_time']
+				})
+		except:
+			issue_doc.append("technician_productivity_matrix",{
+					"technician":doc.get('technician_productivity_matrix')[d]['technician'],
+					"assigned":doc.get('technician_productivity_matrix')[d]['assigned'],
+					"working":doc.get('technician_productivity_matrix')[d]['working'],
+					"closed":doc.get('technician_productivity_matrix')[d]['closed'],
+					"productivity_time":doc.get('technician_productivity_matrix')[d]['productivity_time']
+				})
+			
+	for esc in range(len(doc.get('task_escalation_list'))):
+		issue_doc.append("task_escalation_list",{
+				"escalated_technician":doc.get('task_escalation_list')[esc]['escalated_technician'],
+				"escalated_technician_name":doc.get('task_escalation_list')[esc]['escalated_technician_name'],
+				"description":doc.get('task_escalation_list')[esc]['description'],
+				"escalated_on":doc.get('task_escalation_list')[esc]['escalated_on']
+			})
+	issue_doc.save(ignore_permissions=True)
+
 def validate_reading(doc):
     user_roles= frappe.get_roles(frappe.session.user)
     curr = []
@@ -761,11 +794,13 @@ def set_items_on_machine_reading_from_mr(asset,task):
 def transfer_data_to_issue(doc):
 	doc=json.loads(doc)
 	if doc.get('status')=='Completed':
+		set_service_records_from_task_to_issue(doc)
 		issue_doc = frappe.get_doc('Issue',doc.get('issue'))
 		issue_doc.symptoms=doc.get('symptoms')
 		issue_doc.action=doc.get('action')
 		issue_doc.cause=doc.get('cause')
 		issue_doc.completed_sent=1
+		issue_doc.requested_material_status = doc.get('requested_material_status')
 		task = frappe.get_doc("Task", doc.get('name'))
 		for current_reading in issue_doc.current_reading:
 			current_reading.reading = task.current_reading[0].reading

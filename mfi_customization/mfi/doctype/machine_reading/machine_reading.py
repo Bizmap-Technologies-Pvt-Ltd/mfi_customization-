@@ -26,10 +26,14 @@ class MachineReading(Document):
 				machine_readings = frappe.db.get_all("Machine Reading", filters=filters, fields=['name', 'total', 'task'])
 				if machine_readings:
 					machine_readings = machine_readings[0]
-
+			frappe.log_error(f'mrrrrr,{machine_readings}')
 			if machine_readings and self.total is not None:
-				total_diff = int(self.total)-int(machine_readings[0].total)
-				last_mr_posting_date = frappe.db.get_value("Machine Reading", machine_readings[0].name, "posting_date")
+				try:
+					total_diff = int(self.total)-int(machine_readings[0].total) if machine_readings[0].total is not None else int(self.total)
+					last_mr_posting_date = frappe.db.get_value("Machine Reading", machine_readings[0].name, "posting_date")
+				except:
+					total_diff = int(self.total)-int(machine_readings.total) if machine_readings.total is not None else int(self.total)
+					last_mr_posting_date = frappe.db.get_value("Machine Reading", machine_readings.name, "posting_date")
 				months_diff = month_diff(self.posting_date, last_mr_posting_date)
 				if total_diff<item_total or months_diff<item_months:
 					frappe.db.sql("UPDATE `tabTask` SET repetitive_call = 1 WHERE name=%s",task.name)
