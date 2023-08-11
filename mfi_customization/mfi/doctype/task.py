@@ -486,6 +486,7 @@ def create_machine_reading(doc):
 	for d in doc.get('current_reading'):
 		if len(frappe.get_all("Machine Reading",{"task":doc.name,"project":doc.project,"asset":d.get('asset'),"reading_date":d.get('date')}))<1:
 			if doc.type_of_call =="Toner":
+				frappe.log_error('IFFFFFFFF TONER')
 				mr=frappe.new_doc("Machine Reading")
 				mr.reading_date=d.get('date')
 				mr.asset=d.get('asset')
@@ -502,6 +503,7 @@ def create_machine_reading(doc):
 					})
 				mr.save(ignore_permissions=True)
 			else:
+				frappe.log_error('ELSE NOT TONER')
 				mr=frappe.new_doc("Machine Reading")
 				mr.reading_date=d.get('date')
 				mr.asset=d.get('asset')
