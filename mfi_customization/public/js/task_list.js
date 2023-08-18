@@ -6,10 +6,10 @@ frappe.listview_settings['Task'] = {
         }
     },
 
-    refresh: setTimeout(function(frm){
-        if (frappe.user.has_role("Technicians") == true && frappe.user != "Administrator"){
-			$('.layout-side-section').remove()
-		}
-    }, 200
-    )
+    // refresh: setTimeout(function(frm){
+    //     if (frappe.user.has_role("Technicians") == true && frappe.user != "Administrator"){
+	// 		$('.layout-side-section').remove()
+	// 	}
+    // }, 200
+    // )
 };
