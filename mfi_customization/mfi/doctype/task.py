@@ -557,35 +557,36 @@ def set_reading_from_task_to_issue(doc):
 
 def set_service_records_from_task_to_issue(doc):
 	issue_doc=frappe.get_doc('Issue',{'name':doc.get("issue")})
-	for d in range(len(doc.get('technician_productivity_matrix'))):
-		try:
-			issue_doc.append("technician_productivity_matrix",{
-					"technician":doc.get('technician_productivity_matrix')[d]['technician'],
-					"assigned":doc.get('technician_productivity_matrix')[d]['assigned'],
-					"working":doc.get('technician_productivity_matrix')[d]['working'],
-					"material_request":doc.get('technician_productivity_matrix')[d]['material_request'] if doc.get('technician_productivity_matrix')[d]['material_request'] else '',
-					"material_issued":doc.get('technician_productivity_matrix')[d]['material_issued'] if doc.get('technician_productivity_matrix')[d]['material_issued'] else '',
-					"resume_working":doc.get('technician_productivity_matrix')[d]['resume_working'] if doc.get('technician_productivity_matrix')[d]['resume_working'] else '',
-					"closed":doc.get('technician_productivity_matrix')[d]['closed'],
-					"paused":doc.get('technician_productivity_matrix')[d]['paused'] if doc.get('technician_productivity_matrix')[d]['paused'] else '',
-					"productivity_time":doc.get('technician_productivity_matrix')[d]['productivity_time']
-				})
-		except:
-			issue_doc.append("technician_productivity_matrix",{
-					"technician":doc.get('technician_productivity_matrix')[d]['technician'],
-					"assigned":doc.get('technician_productivity_matrix')[d]['assigned'],
-					"working":doc.get('technician_productivity_matrix')[d]['working'],
-					"closed":doc.get('technician_productivity_matrix')[d]['closed'],
-					"productivity_time":doc.get('technician_productivity_matrix')[d]['productivity_time']
-				})
+	if len(issue_doc.get('technician_productivity_matrix')) < len(doc.get('technician_productivity_matrix')):
+		for d in range(len(doc.get('technician_productivity_matrix'))):
+			try:
+				issue_doc.append("technician_productivity_matrix",{
+						"technician":doc.get('technician_productivity_matrix')[d]['technician'],
+						"assigned":doc.get('technician_productivity_matrix')[d]['assigned'],
+						"working":doc.get('technician_productivity_matrix')[d]['working'],
+						"material_request":doc.get('technician_productivity_matrix')[d]['material_request'] if doc.get('technician_productivity_matrix')[d]['material_request'] else '',
+						"material_issued":doc.get('technician_productivity_matrix')[d]['material_issued'] if doc.get('technician_productivity_matrix')[d]['material_issued'] else '',
+						"resume_working":doc.get('technician_productivity_matrix')[d]['resume_working'] if doc.get('technician_productivity_matrix')[d]['resume_working'] else '',
+						"closed":doc.get('technician_productivity_matrix')[d]['closed'],
+						"paused":doc.get('technician_productivity_matrix')[d]['paused'] if doc.get('technician_productivity_matrix')[d]['paused'] else '',
+						"productivity_time":doc.get('technician_productivity_matrix')[d]['productivity_time']
+					})
+			except:
+				issue_doc.append("technician_productivity_matrix",{
+						"technician":doc.get('technician_productivity_matrix')[d]['technician'],
+						"assigned":doc.get('technician_productivity_matrix')[d]['assigned'] if 'assigned' in doc.get('technician_productivity_matrix')[d].keys() else '',
+						"working":doc.get('technician_productivity_matrix')[d]['working'] if 'working' in doc.get('technician_productivity_matrix')[d].keys() else '',
+						"closed":doc.get('technician_productivity_matrix')[d]['closed'] if 'closed' in doc.get('technician_productivity_matrix')[d].keys() else '',
+						"productivity_time":doc.get('technician_productivity_matrix')[d]['productivity_time'] if 'productivity_time' in doc.get('technician_productivity_matrix')[d].keys() else ''
+					})
 			
-	for esc in range(len(doc.get('task_escalation_list'))):
-		issue_doc.append("task_escalation_list",{
-				"escalated_technician":doc.get('task_escalation_list')[esc]['escalated_technician'],
-				"escalated_technician_name":doc.get('task_escalation_list')[esc]['escalated_technician_name'],
-				"description":doc.get('task_escalation_list')[esc]['description'],
-				"escalated_on":doc.get('task_escalation_list')[esc]['escalated_on']
-			})
+	# for esc in range(len(doc.get('task_escalation_list'))):
+	# 	issue_doc.append("task_escalation_list",{
+	# 			"escalated_technician":doc.get('task_escalation_list')[esc]['escalated_technician'],
+	# 			"escalated_technician_name":doc.get('task_escalation_list')[esc]['escalated_technician_name'],
+	# 			"description":doc.get('task_escalation_list')[esc]['description'],
+	# 			"escalated_on":doc.get('task_escalation_list')[esc]['escalated_on']
+	# 		})
 	issue_doc.save(ignore_permissions=True)
 
 def validate_reading(doc):
@@ -836,7 +837,7 @@ def get_asset(customer,location):
 
 
 def validate_current_reading(doc):
-	if frappe.db.get_value('Type of Call',{'name':doc.type_of_call},'ignore_reading')==0 and len(doc.get("current_reading"))==0:
+	if frappe.db.get_value('Type of Call',{'name':doc.type_of_call},'ignore_reading')==0 and len(doc.get("current_reading"))==0 or (frappe.db.get_value('Asset Readings',{'parent':doc.name},'reading') == None and frappe.db.get_value('Asset Readings',{'parent':doc.name},'reading_2') == None):
 		frappe.throw("Cann't Complete Task Without Current Reading")
 
 

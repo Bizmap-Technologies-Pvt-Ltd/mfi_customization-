@@ -347,8 +347,14 @@ frappe.ui.form.on('Issue', {
 
 	},
 	refresh: function (frm) {
-	        hide_request_mtrl_stus(frm)
-	        status_read_oly_fr_call_cordinator(frm)
+		if (frappe.user=="Administrator"){
+			frm.set_df_property('toner_type', "reqd", 0);
+		}
+		// if (frm.doc.status == 'Task Completed'){
+
+		// }
+		hide_request_mtrl_stus(frm)
+		status_read_oly_fr_call_cordinator(frm)
 		cur_frm.dashboard.hide()
         frappe.db.get_value("Task", {"issue": frm.doc.name}, 'name',(r) =>{
 			if(r.name){
@@ -356,7 +362,7 @@ frappe.ui.form.on('Issue', {
 			}
 		});
 		if (!frm.doc.__islocal ){
-			if (!["Cancelled","Closed"].includes(frm.doc.status)){
+			if (!["Cancelled","Closed"].includes(frm.doc.status) && frm.doc.status != 'Task Completed'){
 				frm.add_custom_button(__('Cancel'), function() {
 					frm.set_value("status","Cancelled")
 					frm.save()
