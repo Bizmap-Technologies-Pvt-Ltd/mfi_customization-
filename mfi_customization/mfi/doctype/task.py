@@ -580,13 +580,15 @@ def set_service_records_from_task_to_issue(doc):
 						"productivity_time":doc.get('technician_productivity_matrix')[d]['productivity_time'] if 'productivity_time' in doc.get('technician_productivity_matrix')[d].keys() else ''
 					})
 			
-	# for esc in range(len(doc.get('task_escalation_list'))):
-	# 	issue_doc.append("task_escalation_list",{
-	# 			"escalated_technician":doc.get('task_escalation_list')[esc]['escalated_technician'],
-	# 			"escalated_technician_name":doc.get('task_escalation_list')[esc]['escalated_technician_name'],
-	# 			"description":doc.get('task_escalation_list')[esc]['description'],
-	# 			"escalated_on":doc.get('task_escalation_list')[esc]['escalated_on']
-	# 		})
+	if len(doc.get('task_escalation_list'))>0:
+		if len(issue_doc.get('task_escalation_list')) < len(doc.get('task_escalation_list')):
+			for esc in range(len(doc.get('task_escalation_list'))):
+				issue_doc.append("task_escalation_list",{
+						"escalated_technician":doc.get('task_escalation_list')[esc]['escalated_technician'],
+						"escalated_technician_name":doc.get('task_escalation_list')[esc]['escalated_technician_name'],
+						"description":doc.get('task_escalation_list')[esc]['description'],
+						"escalated_on":doc.get('task_escalation_list')[esc]['escalated_on']
+					})
 	issue_doc.save(ignore_permissions=True)
 
 def validate_reading(doc):
