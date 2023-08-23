@@ -572,8 +572,7 @@ frappe.ui.form.on('Issue', {
                     item_code: frm.doc.item_code
                 },
                 callback: function(r) {
-
-                    cur_frm.set_query("toner_type", function(doc) {
+                    frm.set_query("toner_type", function(doc) {
                         return {
                             "filters": [
                                 ['Item', 'name', 'in', r.message]
