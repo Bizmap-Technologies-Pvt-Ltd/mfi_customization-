@@ -173,7 +173,7 @@ frappe.ui.form.on('Task', {
 		frm.refresh_field("task_escalation_list");
 		frm.get_field("technician_productivity_matrix").grid.cannot_add_rows = true;
 		frm.refresh_field("technician_productivity_matrix");
-		if (frm.doc.status == "Working" && frappe.user != "Administrator") {
+		if (frm.doc.status == "Working" && frappe.user != "Administrator" && frm.doc.type_of_call != 'Toner') {
 			$(".input-with-feedback option[value=" + 'Open' + "]").remove();
 			frm.doc.current_reading.map((i) => {
 			if (i.type === 'Black & White') {
@@ -192,7 +192,7 @@ frappe.ui.form.on('Task', {
 			$(".input-with-feedback option[value=" + 'Working' + "]").remove();
 		}
 		frm.doc.current_reading.map((i) => {
-			if (i.type === 'Black & White' && frappe.user != "Administrator") {
+			if (i.type === 'Black & White' && frappe.user != "Administrator" && frm.doc.type_of_call != 'Toner') {
 				frm.fields_dict.current_reading.grid.toggle_reqd
 					("reading", frm.doc.status == 'Working')
 			}
@@ -464,7 +464,7 @@ frappe.ui.form.on("Asset Readings", "type", function (frm, cdt, cdn) {
 	var bl_and_wht = frappe.meta.get_docfield("Asset Readings", "reading", d.name);
 	var clr = frappe.meta.get_docfield("Asset Readings", "reading_2", d.name);
 
-	if (d.type == 'Black & White' && frappe.user != "Administrator") {
+	if (d.type == 'Black & White' && frappe.user != "Administrator" && frm.doc.type_of_call != 'Toner') {
 		// bl_and_wht.reqd = 1;
 		bl_and_wht.read_only = 0;
 		clr.reqd = 0;
