@@ -839,7 +839,7 @@ def get_asset(customer,location):
 
 
 def validate_current_reading(doc):
-	if frappe.db.get_value('Type of Call',{'name':doc.type_of_call},'ignore_reading')==0 and len(doc.get("current_reading"))==0 or (frappe.db.get_value('Asset Readings',{'parent':doc.name},'reading') == None and frappe.db.get_value('Asset Readings',{'parent':doc.name},'reading_2') == None):
+	if frappe.db.get_value('Type of Call',{'name':doc.type_of_call},'ignore_reading')==0 and len(doc.get("current_reading"))==0 or (frappe.db.get_value('Asset Readings',{'parent':doc.name},'reading') == None and frappe.db.get_value('Asset Readings',{'parent':doc.name},'reading_2') == None) and doc.type_of_call != 'Toner':
 		frappe.throw("Cann't Complete Task Without Current Reading")
 
 
