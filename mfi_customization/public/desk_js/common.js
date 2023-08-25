@@ -1,6 +1,6 @@
 function hide_search_bar(){
     if (frappe.user != "Administrator"){
-        if(frappe.user.has_role("Customer")==1 || frappe.user.has_role("Technicians")==1 || frappe.user.has_role("Area Technical Manager")==1){
+        if(frappe.user.has_role("Customer")==1 || frappe.user.has_role("Technicians")==1 || frappe.user.has_role("Area Technical Manager")==1 || frappe.user.has_role("Toner Approval 1")==1){
             $("#navbar-search.form-control").hide();
             $(".search-icon").hide();
         }
