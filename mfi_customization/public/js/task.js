@@ -187,10 +187,10 @@ frappe.ui.form.on('Task', {
 			}
 		})
 		}
-		if (frm.doc.status == "Completed") {
-			$(".input-with-feedback option[value=" + 'Open' + "]").remove();
-			$(".input-with-feedback option[value=" + 'Working' + "]").remove();
-		}
+		// if (frm.doc.status == "Completed") {
+		// 	$(".input-with-feedback option[value=" + 'Open' + "]").remove();
+		// 	$(".input-with-feedback option[value=" + 'Working' + "]").remove();
+		// }
 		frm.doc.current_reading.map((i) => {
 			if (i.type === 'Black & White' && frappe.user != "Administrator" && frm.doc.type_of_call != 'Toner') {
 				frm.fields_dict.current_reading.grid.toggle_reqd
