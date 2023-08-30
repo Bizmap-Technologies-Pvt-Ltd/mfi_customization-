@@ -629,7 +629,8 @@ frappe.ui.form.on('Task', {
 				frappe.route_options = {
 					"task": frm.doc.name,
 					"project": frm.doc.project,
-					"asset": i.asset
+					"asset": i.asset,
+					"serial_no": frm.doc.serial_no
 				};
 			})
 			// frappe.route_options = {
