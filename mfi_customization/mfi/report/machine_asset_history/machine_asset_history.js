@@ -21,6 +21,12 @@ frappe.query_reports["Machine Asset History"] = {
             "fieldtype": "Link",
             "options": "Asset",
         },
+        {
+            "fieldname": "serial_no",
+            "label": __("Asset Serial No"),
+            "fieldtype": "Link",
+            "options": "Asset Serial No",
+        },
 
       
 

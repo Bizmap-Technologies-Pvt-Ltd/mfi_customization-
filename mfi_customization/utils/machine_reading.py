@@ -20,19 +20,20 @@ def repetitive_call(asset,task):
   
 #   items = []  
   items = frappe.db.sql("select item_code from `tabAsset Item Child Table` where parent = %s", asset)
+  frappe.log_error(f'iteeee,{items}')
 #   for item in scrapitems:
 #        items.append(item[0])
-  
-  bandw = frappe.db.sql("select total from `tabItem` where name = %s", items)
-  b=str(bandw)
-  b=b.replace("(","")
-  b=b.replace(")","")
-  b=b.replace(",","")
+  if items:
+    bandw = frappe.db.sql("select total from `tabItem` where name = %s", items)
+    b=str(bandw)
+    b=b.replace("(","")
+    b=b.replace(")","")
+    b=b.replace(",","")
   
 
 
-  if mr >= b:
-    if toc == "CM":
-      frappe.db.sql("UPDATE `tabTask` SET repetitive_call = 1 WHERE name=%s",task)
+    if mr >= b:
+      if toc == "CM":
+        frappe.db.sql("UPDATE `tabTask` SET repetitive_call = 1 WHERE name=%s",task)
 
 

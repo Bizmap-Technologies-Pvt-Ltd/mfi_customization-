@@ -106,6 +106,11 @@ def get_columns(filters):
         "fieldname":"mr.actual_coverage",
         "width":100
         },
+        {
+            "label": ("Serial No"),
+            "fieldname": "mr.serial_no",
+            "width": 200
+        },
 
 
     ]
@@ -118,7 +123,7 @@ def prepare_data(filters):
     
     conditions = get_conditions(filters)
     item = frappe.db.sql("""select mr.name,mr.task,mr.reading_date,mr.asset,mr.project,mr.machine_type,mr.colour_reading,mr.black_and_white_reading,
-    mr.total,mrt.item_code,mrt.item_name,mrt.item_group,mrt.total_reading,mrt.percentage_yeild,mrt.yeild as yld
+    mr.total,mr.serial_no,mrt.item_code,mrt.item_name,mrt.item_group,mrt.total_reading,mrt.percentage_yeild,mrt.yeild as yld
                         from `tabMachine Reading` mr
                         LEFT Join `tabAsset Item Child Table` mrt on mrt.parent = mr.name
                          where mr.docstatus!=2 %s ORDER BY mr.reading_date DESC"""%conditions,filters,as_dict=1)
@@ -129,7 +134,7 @@ def prepare_data(filters):
         
         row.update({"mr.name":i.name,"mr.reading_date":i.reading_date,"mr.asset":i.asset,"mr.project":i.project,
         "mr.machine_type":i.machine_type,"mr.colour_reading":i.colour_reading,
-        "mr.black_and_white_reading":i.black_and_white_reading,"mr.total":i.total,"mrt.item_code":i.item_code,
+        "mr.black_and_white_reading":i.black_and_white_reading,"mr.total":i.total,"mr.serial_no":i.serial_no,"mrt.item_code":i.item_code,
       "mrt.item_name":i.item_name,"mrt.item_group":i.item_group,"mrt.yeild":i.yld,
       "mrt.total_reading":i.total_reading,"mrt.percentage_yeild":i.percentage_yeild})
 
@@ -151,7 +156,7 @@ def prepare_data(filters):
       "mrt.item_name":i.item_name,"mrt.item_group":i.item_group,"mrt.yeild":i.yld,
       "mrt.total_reading":i.total_reading,"mrt.percentage_yeild":i.percentage_yeild,
        "mr.rated_yeild":rated_yeild,"mr.ratedcoverage":f"{rated_cvrg}%","mr.actual_yeild":Actual_Yeild,
-       "mr.actual_coverage":f"{Actual_coverage}%"})
+       "mr.actual_coverage":f"{Actual_coverage}%","mr.serial_no":i.serial_no})
                    
         
         data.append(row)
@@ -167,4 +172,5 @@ def get_conditions(filters):
     if filters.get("asset"): conditions += "and mr.asset = %(asset)s"
     if filters.get("project"): conditions += "and mr.project = %(project)s"
     if filters.get("task"): conditions += "and mr.task = %(task)s"
+    if filters.get("serial_no"): conditions += "and mr.serial_no = %(serial_no)s"
     return conditions

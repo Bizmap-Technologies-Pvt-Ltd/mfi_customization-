@@ -64,7 +64,7 @@ def on_update(doc, method):
                         'location', doc.location)
 
 
-@frappe.whitelist(allow_guest=True)
+# @frappe.whitelist(allow_guest=True)
 def make_task_on_PM_call_interval(doc, method):
     today = datetime.today().strftime('%Y-%m-%d')
     for i in doc.pm_schedule:
