@@ -647,6 +647,9 @@ frappe.ui.form.on('Task', {
 		if (frappe.user.has_role("Technicians") == 1 && frm.doc.type_of_call != "Toner" && frm.doc.status !== 'Completed' && frm.doc.status != 'Open') {
 
 			frm.add_custom_button(__('Escalate'), function () {
+				if (frm.doc.status == 'Resume Working'){
+					frm.set_value('status','Escalated')
+				}
 				validate_escalation(frm);
 				let technicians = [];
 				for (let t of frm.doc.task_escalation_list){

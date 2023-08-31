@@ -495,6 +495,7 @@ def create_machine_reading(doc):
 				mr.machine_type=d.get('type')
 				mr.total=d.get("total") or 0
 				mr.project=doc.project
+				mr.serial_no=doc.serial_no
 				mr.task=doc.name
 				mr.row_id = d.name
 				mr.item = doc.get('toner_type')
@@ -507,6 +508,7 @@ def create_machine_reading(doc):
 				mr=frappe.new_doc("Machine Reading")
 				mr.reading_date=d.get('date')
 				mr.asset=d.get('asset')
+				mr.serial_no=doc.serial_no
 				mr.black_and_white_reading=d.get("reading")
 				mr.colour_reading=d.get("reading_2")
 				mr.machine_type=d.get('type')
