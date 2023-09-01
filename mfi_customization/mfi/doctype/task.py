@@ -609,12 +609,15 @@ def validate_reading(doc):
                 lst.total=( int(lst.get('reading') or 0)  + int(lst.get('reading_2') or 0))
                 last.append(lst.total)
                 last_date.append(lst.date)
+            if doc.issue_type == 'Error message':
+                cur.reading = doc.get('last_readings')[0].reading
+                cur.reading_2 = doc.get('last_readings')[0].reading_2
     if len(curr)>0 and len(last)>0:
         print(f'\n\n\n\n\n122{curr},{last}\n\n\n\n\n')
         frappe.log_error(f'\n\n\n\n\n122{curr},{last}\n\n\n\n\n')
-        # if doc.issue_type != 'Error message':
-        if int(last[0])>=int(curr[0]) and int(last[0])>0 and int(curr[0])>0:
-            frappe.throw("Current Reading Must be Greater than Last Reading")
+        if doc.issue_type != 'Error message':
+            if int(last[0])>=int(curr[0]) and int(last[0])>0 and int(curr[0])>0:
+                frappe.throw("Current Reading Must be Greater than Last Reading")
 
     if len(curr_date)>0 and len(last_date)>0:
         if last_date[0] != today:
