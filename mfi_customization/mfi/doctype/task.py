@@ -610,8 +610,8 @@ def validate_reading(doc):
                 last.append(lst.total)
                 last_date.append(lst.date)
             if doc.issue_type == 'Error message':
-                cur.reading = doc.get('last_readings')[0].reading
-                cur.reading_2 = doc.get('last_readings')[0].reading_2
+                cur.reading = doc.get('last_readings')[0].reading if len(doc.last_readings)>0 else 0
+                cur.reading_2 = doc.get('last_readings')[0].reading_2 if len(doc.last_readings)>0 else 0
     if len(curr)>0 and len(last)>0:
         print(f'\n\n\n\n\n122{curr},{last}\n\n\n\n\n')
         frappe.log_error(f'\n\n\n\n\n122{curr},{last}\n\n\n\n\n')
