@@ -22,6 +22,7 @@ def validate(doc,method):
 	send_task_escalation_email(doc)
 	# machine_reading=""
 	for d in doc.get("current_reading"):
+		d.total= (int(d.get('reading') or 0)  + int(d.get('reading_2') or 0))
 		# machine_reading=d.machine_reading
 		if d.idx>1:
 			frappe.throw("More than one row not allowed")
