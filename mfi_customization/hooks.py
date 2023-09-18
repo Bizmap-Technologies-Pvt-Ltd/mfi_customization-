@@ -11,6 +11,9 @@ app_color = "grey"
 app_email = "suraj@bizmap.in"
 app_license = "MIT"
 
+
+fixtures = ["Client Script","Custom Field","Property Setter"]
+
 # Includes in <head>
 # ------------------
 

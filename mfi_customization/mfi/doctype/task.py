@@ -20,8 +20,11 @@ def validate(doc,method):
 	set_actual_time(doc)
 	send_task_completion_email(doc)
 	send_task_escalation_email(doc)
+	validate_pm_task(doc)
+	# create_machine_reading1(doc)
 	# machine_reading=""
 	for d in doc.get("current_reading"):
+		d.total=( int(d.get('reading') or 0)  + int(d.get('reading_2') or 0))
 		# machine_reading=d.machine_reading
 		if d.idx>1:
 			frappe.throw("More than one row not allowed")
@@ -46,7 +49,7 @@ def validate(doc,method):
 						"reading_2":mr_all[d]['colour_reading'],
 						"total":( int(mr_all[d]['black_and_white_reading'] or 0)  + int(mr_all[d]['colour_reading'] or 0)),
 						"yeild": int(mr_all[d]['total']) - int(mr_all[d+1]['total']) or 0,
-						"actual_coverage": str(round(5000/(int(mr_all[d]['total']) - int(mr_all[d+1]['total']))*5, 2)) + '%',
+						"actual_coverage": str(round(5000/(int(mr_all[d]['total']) - int(mr_all[d+1]['total']))*5, 2)) + '%' if (int(mr_all[d]['total']) - int(mr_all[d+1]['total']))>0 else 0,
 						"rated_yield": 5000
 						})
 
@@ -159,6 +162,7 @@ def send_task_escalation_email(doc):
 			helpdesk_email_body = f"""Task ticket number {doc.name} has been
 								Escalated By {doc.technician_name} for Follow Up."""
 			recipients = frappe.db.get_value("Company", doc.company, "support_email")
+			frappe.log_error(f'recipients,{recipients}')
 			if doc.type_of_call == "Toner":
 				recipients = frappe.db.get_value("Company", doc.company, "toner_support_email")
 
@@ -232,6 +236,8 @@ def on_change(doc,method):
 		update_machine_reading(doc, existed_mr)
 	else:
 		create_machine_reading(doc)
+		# else:
+		# 	create_machine_reading1(doc)
 	if doc.get("issue"):
 		issue=frappe.get_doc("Issue",doc.issue)
 		issue.response_date_time=doc.attended_date_time
@@ -489,7 +495,7 @@ def create_machine_reading(doc):
 				frappe.log_error('IFFFFFFFF TONER')
 				mr=frappe.new_doc("Machine Reading")
 				mr.reading_date=d.get('date')
-				mr.asset=d.get('asset')
+				mr.asset=doc.get('asset')
 				mr.black_and_white_reading=d.get("reading")
 				mr.colour_reading=d.get("reading_2")
 				mr.machine_type=d.get('type')
@@ -504,10 +510,10 @@ def create_machine_reading(doc):
 					})
 				mr.save(ignore_permissions=True)
 			else:
-				frappe.log_error('ELSE NOT TONER')
+				frappe.log_error('ELSE NOT TONER12')
 				mr=frappe.new_doc("Machine Reading")
 				mr.reading_date=d.get('date')
-				mr.asset=d.get('asset')
+				mr.asset=doc.get('asset')
 				mr.serial_no=doc.serial_no
 				mr.black_and_white_reading=d.get("reading")
 				mr.colour_reading=d.get("reading_2")
@@ -518,8 +524,52 @@ def create_machine_reading(doc):
 				mr.row_id = d.name
 				if doc.type_of_call =="Installation":
 					mr.reading_type = "Installation"
-				mr.save(ignore_permissions=True)
+				frappe.log_error('MR SAVVVEEE11111')
+				mr.save()
 			# d.machine_reading=mr.name
+
+def create_machine_reading1(doc):
+	doc = json.loads(doc)
+	for d in doc.get('current_reading'):
+		if len(frappe.get_all("Machine Reading",{"task":doc.get("name"),"project":doc.get("project"),"asset":d.get('asset'),"reading_date":d.get('date')}))<1:
+			if doc.get("type_of_call") =="Toner":
+				frappe.log_error('IFFFFFFFF TONER')
+				mr=frappe.new_doc("Machine Reading")
+				mr.reading_date=d.get('date')
+				mr.asset=d.get('asset')
+				mr.black_and_white_reading=d.get("reading")
+				mr.colour_reading=d.get("reading_2")
+				mr.machine_type=d.get('type')
+				mr.total=d.get("total") or 0
+				mr.project=doc.get("project")
+				mr.serial_no=doc.get("serial_no")
+				mr.task=doc.get("name")
+				mr.row_id = d.get("name")
+				mr.item = doc.get('toner_type')
+				mr.append("items",{
+						"item_code":doc.get('toner_type')
+					})
+				mr.save(ignore_permissions=True)
+			else:
+				frappe.log_error('ELSE NOT TONER123')
+				mr=frappe.new_doc("Machine Reading")
+				frappe.log_error('ELSE NOT TONER111111')
+				mr.reading_date=d.get('date')
+				mr.asset=d.get('asset')
+				mr.serial_no=doc.get("serial_no")
+				mr.black_and_white_reading=d.get("reading")
+				mr.colour_reading=d.get("reading_2")
+				mr.machine_type=d.get('type')
+				mr.total=d.get("total")
+				mr.project=doc.get("project")
+				mr.task=doc.get("name")
+				mr.row_id = d.get("name")
+				frappe.log_error('MR SAVVVEEE')
+				if doc.get("type_of_call") =="Installation":
+					mr.reading_type = "Installation"
+				frappe.log_error('MR SAVVVEEE11111')
+				mr.save()
+
 def update_machine_reading(doc, existed_mr):
 	for d in doc.get('current_reading'):
 		for mr in existed_mr:
@@ -602,20 +652,20 @@ def validate_reading(doc):
     if "Call Coordinator" not in user_roles or "Administrator" in user_roles:
         for cur in doc.get('current_reading'):
             print(f'\n\n\n\n\ntask{cur.get("reading")},{cur.get("reading_2")}\n\n\n\n\n')
-            cur.total=( int(cur.get('reading') or 0)  + int(cur.get('reading_2') or 0))
+            cur.total=( int(doc.get('current_reading')[0].reading or 0)  + int(doc.get('current_reading')[0].reading_2 or 0))
             curr.append(cur.total)
             curr_date.append(cur.date)
             for lst in doc.get('last_readings'):
                 lst.total=( int(lst.get('reading') or 0)  + int(lst.get('reading_2') or 0))
                 last.append(lst.total)
                 last_date.append(lst.date)
-            if doc.issue_type == 'Error message':
-                cur.reading = doc.get('last_readings')[0].reading
-                cur.reading_2 = doc.get('last_readings')[0].reading_2
+            # if doc.permanent_machine_error == 1:
+            #     cur.reading = doc.get('last_readings')[0].reading
+            #     cur.reading_2 = doc.get('last_readings')[0].reading_2
     if len(curr)>0 and len(last)>0:
         print(f'\n\n\n\n\n122{curr},{last}\n\n\n\n\n')
         frappe.log_error(f'\n\n\n\n\n122{curr},{last}\n\n\n\n\n')
-        if doc.issue_type != 'Error message':
+        if doc.permanent_machine_error != 1:
             if int(last[0])>=int(curr[0]) and int(last[0])>0 and int(curr[0])>0:
                 frappe.throw("Current Reading Must be Greater than Last Reading")
 
@@ -638,9 +688,11 @@ def validate_if_material_request_is_not_submitted(doc):
 	for mr in frappe.get_all("Material Request",{"task":doc.name,"workflow_state":['not in', ['Approved', 'Rejected']]}):
 		frappe.throw("Material Request is not completed yet. Name <b>{0}</b>".format(mr.name))
 
-# def attachment_validation(doc):
-# 	if not doc.attachments or  len(doc.attachments)==0:
-# 		frappe.throw("Cann't Completed Task Without Attachment")
+def validate_pm_task(doc):
+	t = frappe.db.get_all('Task', {'asset':doc.asset, 'serial_no':doc.serial_no, 'subject': 'PM Call Interval', 'type_of_call':'PM', 'issue_type': 'Preventive', 'status': 'Open'}, pluck='name')
+	for i in t:
+		t1 = frappe.get_doc('Task', i)
+		t1.status = 'Cancelled'
 
 def signature_validation(doc):
 	if (not doc.customer_signature or doc.customer_signature is None) and doc.type_of_call != 'Toner':
