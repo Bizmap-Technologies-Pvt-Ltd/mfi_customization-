@@ -616,7 +616,7 @@ def validate_reading(doc):
     if len(curr)>0 and len(last)>0:
         print(f'\n\n\n\n\n122{curr},{last}\n\n\n\n\n')
         frappe.log_error(f'\n\n\n\n\n122{curr},{last}\n\n\n\n\n')
-        if doc.issue_type != 'Error message':
+        if doc.permanent_machine_error != 1:
             if int(last[0])>=int(curr[0]) and int(last[0])>0 and int(curr[0])>0:
                 frappe.throw("Current Reading Must be Greater than Last Reading")
 
