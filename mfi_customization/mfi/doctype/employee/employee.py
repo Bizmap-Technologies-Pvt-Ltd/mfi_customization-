@@ -208,6 +208,38 @@ def get_type_of_call(doc,method):
             usr_perm.apply_to_all_doctypes = 1
             usr_perm.save()
 
+def get_locations(doc,method):
+    if len(doc.locations)>0:
+        frappe.log_error(f"locs,{frappe.db.get_all('User Permission',{'allow':'Location','user':doc.user_id},'for_value',pluck='for_value')}")
+        l=[]
+        r = []
+        loc = []
+        for i in doc.locations:
+            # frappe.log_error(f'locs11111,{i}')
+            if i.location not in frappe.db.get_all('User Permission',{'allow':'Location','user':doc.user_id},'for_value',pluck='for_value'):
+                l.append(i.location)
+        frappe.log_error(f'lll,{l}')
+        for k in l:
+            usr_perm = frappe.new_doc('User Permission')
+            usr_perm.user = doc.user_id
+            usr_perm.allow = 'Location'
+            usr_perm.for_value = k
+            usr_perm.apply_to_all_doctypes = 1
+            frappe.log_error('SACEVEVE')
+            usr_perm.save()
+
+        for z in doc.locations:
+            loc.append(z.location)
+
+
+        for j in frappe.db.get_all('User Permission',{'allow':'Location','user':doc.user_id},'for_value',pluck='for_value'):
+            frappe.log_error('REMOVE')
+            if j not in loc:
+                r.append(j)
+                us_per = frappe.get_doc('User Permission',{'allow':'Location','user':doc.user_id,'for_value':j})
+                frappe.delete_doc('User Permission', us_per.name)
+
+
 def get_roles_checked(doc,method):  
     print('\n\n\nroles checkefd\n\n\n\n')
     if doc.designation == 'Regional Technical Manager':
