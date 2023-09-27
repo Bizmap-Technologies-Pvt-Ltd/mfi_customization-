@@ -239,6 +239,46 @@ def get_locations(doc,method):
                 us_per = frappe.get_doc('User Permission',{'allow':'Location','user':doc.user_id,'for_value':j})
                 frappe.delete_doc('User Permission', us_per.name)
 
+def get_segment(doc,method):
+    if doc.segment_type == 'Hardware':
+        if len(doc.hardware_segment)>0:
+            frappe.log_error(f"locs,{frappe.db.get_all('User Permission',{'allow':'Hardware Segment','user':doc.user_id},'for_value',pluck='for_value')}")
+            l=[]
+            r = []
+            loc = []
+            for i in doc.hardware_segment:
+                # frappe.log_error(f'locs11111,{i}')
+                if i.hardware_segment not in frappe.db.get_all('User Permission',{'allow':'Hardware Segment','user':doc.user_id},'for_value',pluck='for_value'):
+                    l.append(i.hardware_segment)
+            frappe.log_error(f'lll,{l}')
+            for k in l:
+                usr_perm = frappe.new_doc('User Permission')
+                usr_perm.user = doc.user_id
+                usr_perm.allow = 'Hardware Segment'
+                usr_perm.for_value = k
+                usr_perm.apply_to_all_doctypes = 1
+                frappe.log_error('SAVE')
+                usr_perm.save()
+
+    elif doc.segment_type == 'Software':
+        if len(doc.software_segment)>0:
+            frappe.log_error(f"locs,{frappe.db.get_all('User Permission',{'allow':'Software Segment','user':doc.user_id},'for_value',pluck='for_value')}")
+            l=[]
+            r = []
+            loc = []
+            for i in doc.hardware_segment:
+                # frappe.log_error(f'locs11111,{i}')
+                if i.software_segment not in frappe.db.get_all('User Permission',{'allow':'Software Segment','user':doc.user_id},'for_value',pluck='for_value'):
+                    r.append(i.software_segment)
+            frappe.log_error(f'lll,{r}')
+            for k in r:
+                usr_perm = frappe.new_doc('User Permission')
+                usr_perm.user = doc.user_id
+                usr_perm.allow = 'Software Segment'
+                usr_perm.for_value = k
+                usr_perm.apply_to_all_doctypes = 1
+                frappe.log_error('SAVE12')
+                usr_perm.save()
 
 def get_roles_checked(doc,method):  
     print('\n\n\nroles checkefd\n\n\n\n')
