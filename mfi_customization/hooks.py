@@ -156,7 +156,7 @@ doc_events = {
     },
     "Employee":{
         "after_save":["mfi_customization.mfi.doctype.employee.employee.get_company","mfi_customization.mfi.doctype.employee.employee.get_user"],
-        "validate":["mfi_customization.mfi.doctype.employee.employee.get_territory","mfi_customization.mfi.doctype.employee.employee.get_type_of_call","mfi_customization.mfi.doctype.employee.employee.get_roles_checked","mfi_customization.mfi.doctype.employee.employee.get_type_of_call","mfi_customization.mfi.doctype.employee.employee.get_user","mfi_customization.mfi.doctype.employee.employee.get_locations"],
+        "validate":["mfi_customization.mfi.doctype.employee.employee.get_territory","mfi_customization.mfi.doctype.employee.employee.get_type_of_call","mfi_customization.mfi.doctype.employee.employee.get_roles_checked","mfi_customization.mfi.doctype.employee.employee.get_type_of_call","mfi_customization.mfi.doctype.employee.employee.get_user","mfi_customization.mfi.doctype.employee.employee.get_locations","mfi_customization.mfi.doctype.employee.employee.get_segment"],
     },
     "Project":{
         "after_save":"mfi_customization.mfi.doctype.project.get_company",
