@@ -777,7 +777,7 @@ function set_permissions_for_symptoms(frm) {
 }
 
 function read_onl_for_call_codinator_status_complete(frm) {
-	if ((frappe.user.has_role("Call Coordinator") == 1 || frappe.user.has_role("Toner Coordinator") == 1) && frappe.user.has_role('Administrator') == 0 && frm.doc.status == "Completed") {
+	if ((frappe.user.has_role("Call Coordinator") == 1 || frappe.user.has_role("Toner Coordinator") == 1) && frappe.user != "Administrator") {
 		frm.set_df_property('status', "read_only", 1);
 	}
 }
