@@ -976,7 +976,10 @@ def productivity_time(doc,method):
 				working = datetime.strptime(i.working, '%Y-%m-%d %H:%M:%S.%f')
 			except:
 				working = i.working
-			difference = closed - working
+			try:
+				difference = closed - working
+			except:
+				difference = closed - datetime.strptime(i.working, '%Y-%m-%d %H:%M:%S.%f')
 			seconds_in_day = 24 * 60 * 60
 			productivity_time = str(difference)
 			separator = ':'
