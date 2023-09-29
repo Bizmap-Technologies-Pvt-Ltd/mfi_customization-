@@ -49,8 +49,14 @@ def update_submitted_assets():
         frappe.log_error(f'Asset,{i}')
         ass_doc = frappe.get_doc('Asset', i)
         ass_doc.save()
-    
-    
+
+@frappe.whitelist()   
+def get_pm_date(creation, pm_call_interval,doc):
+    import json
+    doc = json.loads(doc)
+    frappe.log_error('PM')
+    today = creation
+    return (datetime.strptime(today, '%Y-%m-%d %H:%M:%S.%f') + timedelta(days=int(pm_call_interval))).strftime('%Y-%m-%d')
     
 
 def on_cancel(doc, method):
@@ -65,34 +71,65 @@ def on_update(doc, method):
 
 
 # @frappe.whitelist(allow_guest=True)
-def make_task_on_PM_call_interval(doc, method):
+def make_task_on_PM_call_interval():
     today = datetime.today().strftime('%Y-%m-%d')
-    for i in doc.pm_schedule:
-        if i.date == today:
-            project = frappe.get_value('Project', {'name': doc.project}, 'status')
-            if project == "Open":
-                if doc.status == "Submitted":
-                    task_doc = frappe.new_doc('Task')
-                    task_doc.subject = "PM Call Interval"
-                    task_doc.customer = frappe.get_value(
-                        'Project', {'name': doc.project}, 'customer')
-                    task_doc.asset = doc.name
-                    task_doc.location = doc.location
-                    task_doc.type_of_call = "PM"
-                    task_doc.issue_type = "Preventive"
-                    task_doc.failure_date_and_time = datetime.today()
-                    task_doc.raise_by_contact = frappe.get_value(
-                        'Customer', {'name': task_doc.customer}, 'customer_name')
-                    task_doc.project = doc.project
-                    task_doc.status = "Open"
-                    task_doc.serial_no = doc.serial_no
-                    task_doc.area = doc.area
-                    task_doc.sub_location_area = doc.sub_location_area
-                    task_doc.machine_location = doc.machine_location
-                    task_doc.completed_by = doc.technician
-                    task_doc.save()
-                    print("Task created for project", doc.project)
-                    print("Asset", doc.name)
+    asset_all = frappe.db.get_all('Asset', {'status':"Submitted"}, pluck='name')
+    for i in asset_all:
+        asset = frappe.get_doc('Asset',i)
+        if len(asset.pm_schedule)>0:
+            for i in asset.pm_schedule:
+                if i.date == today:
+                    project = frappe.get_value('Project', {'name': asset.project}, 'status')
+                    if project == "Open":
+                        if asset.serial_no not in frappe.db.get_all('Task',{'asset':asset.name},'serial_no',pluck='serial_no') or asset.name not in frappe.db.get_all('Task',{'serial_no':asset.serial_no},'asset',pluck='asset'):
+                            task_doc = frappe.new_doc('Task')
+                            task_doc.subject = "PM Call Interval"
+                            task_doc.customer = frappe.get_value(
+                                'Project', {'name': asset.project}, 'customer')
+                            task_doc.asset = asset.name
+                            task_doc.location = asset.location
+                            task_doc.type_of_call = "PM"
+                            task_doc.issue_type = "Preventive"
+                            task_doc.failure_date_and_time = datetime.today()
+                            task_doc.raise_by_contact = frappe.get_value(
+                                'Customer', {'name': task_doc.customer}, 'customer_name')
+                            task_doc.project = asset.project
+                            task_doc.status = "Open"
+                            task_doc.serial_no = asset.serial_no
+                            task_doc.area = asset.area
+                            task_doc.sub_location_area = asset.sub_location_area
+                            task_doc.machine_location = asset.machine_location
+                            task_doc.completed_by = asset.technician
+                            task_doc.save()
+
+        else:
+            today1 = datetime.today().date()
+            frappe.log_error('ELSEE')
+            if asset.pm_call_interval:
+                if asset.pm_date == today1:
+                    project = frappe.get_value('Project', {'name': asset.project}, 'status')
+                    if project == "Open":
+                        if asset.serial_no not in frappe.db.get_all('Task',{'asset':asset.name},'serial_no',pluck='serial_no') or asset.name not in frappe.db.get_all('Task',{'serial_no':asset.serial_no},'asset',pluck='asset'):
+                            task_doc = frappe.new_doc('Task')
+                            task_doc.subject = "PM Call Interval"
+                            task_doc.customer = frappe.get_value(
+                                'Project', {'name': asset.project}, 'customer')
+                            task_doc.asset = asset.name
+                            task_doc.location = asset.location
+                            task_doc.type_of_call = "PM"
+                            task_doc.issue_type = "Preventive"
+                            task_doc.failure_date_and_time = datetime.today()
+                            task_doc.raise_by_contact = frappe.get_value(
+                                'Customer', {'name': task_doc.customer}, 'customer_name')
+                            task_doc.project = asset.project
+                            task_doc.status = "Open"
+                            task_doc.serial_no = asset.serial_no
+                            task_doc.area = asset.area
+                            task_doc.sub_location_area = asset.sub_location_area
+                            task_doc.machine_location = asset.machine_location
+                            task_doc.completed_by = asset.technician
+                            frappe.log_error('CREATE')
+                            task_doc.save()
 
 
 @frappe.whitelist()
