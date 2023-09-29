@@ -19,6 +19,24 @@ frappe.ui.form.on('Asset', {
 
     },
 
+    pm_call_interval: function(frm) {
+        frappe.call({
+            method: 'mfi_customization.mfi.doctype.Asset.get_pm_date',
+            args: {
+                "creation": frm.doc.creation,
+                "pm_call_interval": frm.doc.pm_call_interval,
+                "doc": frm.doc
+
+            },
+            callback: function(r) {
+					if (r.message) {
+                        frm.set_value('pm_date',r.message)
+						frm.save('Update');
+					}
+            }
+        })
+    },
+
     pm_cycle: function(frm) {
             frappe.call({
                 method: 'mfi_customization.mfi.doctype.Asset.date_pm_cycle',
