@@ -579,7 +579,33 @@ frappe.ui.form.on('Issue', {
                             ]
                         };
                     });
+		    frm.set_query('item','delivery_details',function(doc, cdt, cdn) {
+			return {
+                            "filters": [
+                                ['Item', 'name', 'in', r.message]
+                            ]
+                        };
+		    })
 
+                }
+            });
+        }
+    },
+    refresh: function(frm) {
+        if (frm.doc.item_code) {
+            frappe.call({
+                method: 'mfi_customization.mfi.doctype.issue.asset_name_item',
+                args: {
+                    item_code: frm.doc.item_code
+                },
+                callback: function(r) {
+		     frm.set_query('item','delivery_details',function(doc, cdt, cdn) {
+			return {
+                            "filters": [
+                                ['Item', 'name', 'in', r.message]
+                            ]
+                        };
+		     })
                 }
             });
         }
