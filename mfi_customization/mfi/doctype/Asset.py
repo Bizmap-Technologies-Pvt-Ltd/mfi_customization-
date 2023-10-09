@@ -56,7 +56,7 @@ def get_pm_date(creation, pm_call_interval,doc):
     doc = json.loads(doc)
     frappe.log_error('PM')
     today = creation
-    return (datetime.strptime(today, '%Y-%m-%d %H:%M:%S.%f') + timedelta(days=int(pm_call_interval))).strftime('%Y-%m-%d')
+    return (datetime.today() + timedelta(days=int(pm_call_interval))).strftime('%Y-%m-%d')
     
 
 def on_cancel(doc, method):
