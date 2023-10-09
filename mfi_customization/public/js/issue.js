@@ -57,13 +57,13 @@ frappe.ui.form.on('Issue', {
 
             //frm.set_df_property('customer',"read_only",1);
             frm.set_df_property('current_reading',"hidden",1);
-			frm.set_df_property('toner_type', "reqd", 0);
-            frm.set_df_property('toner_type', "hidden", 1);
+			// frm.set_df_property('toner_type', "reqd", 0);
+            // frm.set_df_property('toner_type', "hidden", 1);
 
         }
-		if(frappe.user.has_role("Toner Coordinator")==1){
-			frm.set_df_property('toner_type', "hidden", 1);
-		}
+		// if(frappe.user.has_role("Toner Coordinator")==1){
+		// 	frm.set_df_property('toner_type', "hidden", 1);
+		// }
 	},
 
 	before_save:function(frm){
@@ -347,9 +347,9 @@ frappe.ui.form.on('Issue', {
 
 	},
 	refresh: function (frm) {
-		if (frappe.user=="Administrator"){
-			frm.set_df_property('toner_type', "reqd", 0);
-		}
+		// if (frappe.user=="Administrator"){
+		// 	frm.set_df_property('toner_type', "reqd", 0);
+		// }
 		// if (frm.doc.status == 'Task Completed'){
 
 		// }
@@ -572,13 +572,13 @@ frappe.ui.form.on('Issue', {
                     item_code: frm.doc.item_code
                 },
                 callback: function(r) {
-                    frm.set_query("toner_type", function(doc) {
-                        return {
-                            "filters": [
-                                ['Item', 'name', 'in', r.message]
-                            ]
-                        };
-                    });
+                    // frm.set_query("toner_type", function(doc) {
+                    //     return {
+                    //         "filters": [
+                    //             ['Item', 'name', 'in', r.message]
+                    //         ]
+                    //     };
+                    // });
 		    frm.set_query('item','delivery_details',function(doc, cdt, cdn) {
 			return {
                             "filters": [
