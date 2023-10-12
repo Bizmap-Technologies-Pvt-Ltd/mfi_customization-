@@ -710,7 +710,7 @@ frappe.ui.form.on('Task', {
 	},
 
 	refresh: setTimeout(function (frm){
-		if (frappe.user.has_role("Technicians") == true && frappe.user != "Administrator"){
+		if (frappe.user != "Administrator"){
 			$('.layout-side-section').remove()
 		}
     }, 2
