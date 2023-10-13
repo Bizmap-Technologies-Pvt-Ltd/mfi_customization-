@@ -622,6 +622,25 @@ function transfer_data_to_issue(frm) {
 
 frappe.ui.form.on('Task', {
 	refresh(frm) {
+		if (frappe.user == "Administrator") {
+			frm.add_custom_button(__('Delete Task'), function () {
+				frappe.call({
+					method: 'mfi_customization.mfi.doctype.task.delete_task',
+					args: {
+						'name': frm.doc.name
+					},
+					callback: function (r) {
+						console.log('DELETE TASK')
+						if (!r.exc) {
+							if (r.message) {
+								frappe.msgprint("Task Deleted")
+							}
+						}
+					}
+
+				});
+			})
+		}
 		hide_btn_make(frm)
 		$('.signature-btn-row').remove()
 		frm.add_custom_button(__('Machine Asset History Report'), function () {
