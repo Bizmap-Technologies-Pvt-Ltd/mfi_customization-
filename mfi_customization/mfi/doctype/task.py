@@ -371,6 +371,9 @@ def get_assign_user(doctype, txt, searchfield, start, page_len, filters):
 		query = f""" select u.name, u.full_name from `tabUser` u where u.name in {tuple(user_list)} and u.{searchfield} like "%{txt}%" """
 		return frappe.db.sql(query)
 
+@frappe.whitelist()
+def delete_task(name):
+	return frappe.db.sql("DELETE FROM `tabTask` WHERE name = %s", name)
 
 @frappe.whitelist()
 def check_material_request_status(task):
