@@ -5,7 +5,10 @@ import frappe
 from frappe.model.document import Document
 
 class CompatibleItems(Document):
-	pass
+	def on_submit(self):
+		add_item_acc()
+		add_item_ton()
+	# pass
 
 
 def add_item_acc():
